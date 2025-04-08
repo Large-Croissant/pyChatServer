@@ -1,7 +1,7 @@
-import logging.config
 import socket
 import threading
 import logging
+import logging.config
 
 
 SERVER_PORT = 12343
@@ -41,6 +41,7 @@ def auth_client(sock: socket.socket, addr: tuple):
         user = User(uname, sock, addr)
         CLIENTS.append(user)
         logger.info(f"User {uname} connected from {addr[0]}:{addr[1]}")
+        sock.send(f"[SERVER] Hello, {uname} :)".encode())
 
 
 def listen_for_clients(sock: socket.socket):
@@ -54,7 +55,7 @@ def listen_for_clients(sock: socket.socket):
 
 
 def main():
-    listen_sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    listen_sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     listen_sock.bind((BIND_ADDR, SERVER_PORT))
     logger.info(f"Listener socket created and bound to {BIND_ADDR}")
     listen_thread = threading.Thread(target=listen_for_clients, args=[listen_sock])
